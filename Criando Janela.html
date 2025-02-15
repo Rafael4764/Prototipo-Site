@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="header-container">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+           <li id="fundamentos"><a href="#">Fundamentos de OpenGL</a>
+            <ul id="Fundamentos-list">
+                <li><a href="Criando Janela.html">Criando uma aplicação</a></li>
+                <li><a href="Renderizando um triangulo.html">Renderizando uma triangulo</a></li>
+                <li><a href="Iniciando um shader.html">Iniciando shader</a></li>
+                <li><a href="Adicionando Movimento.html">Adicionando movimento</a></li>
+            </ul>
+           </li>
+        </ul>
+    </nav>
+    <nav class="header-container__mobile">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+           <li id="fundamentos1"><a href="#">Fundamentos de OpenGL</a>
+            <ul id="Fundamentos-list1">
+                <li><a href="Criando Janela.html">Criando uma aplicação</a></li>
+                <li><a href="Renderizando uma triangulo.html">Renderizando uma triangulo</a></li>
+                <li><a href="Iniciando um shader.html">Iniciando shader</a></li>
+                <li><a href="Adicionando Movimento.html">Adicionando movimento</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+            </ul>
+           </li>
+        </ul>
+    </nav>
+        <main>
+            <h2>GLFW</h2>
+            <p>O primeiro passo da configuração do GLFW é baixa-lo e para isso,
+                acesse o site oficial do GLFW em <a href="https://www.glfw.org/" target="_blank">https://www.glfw.org/</a>. Na página principal, 
+                você encontrará a seção de downloads. É importante escolher a versão correta para o seu sistema operacional.
+                 Para facilitar, recomenda-se baixar a versão pré-compilada para Windows. 
+                 Clique no link correspondente e faça o download do arquivo ZIP que contém os binários da biblioteca. 
+                 Após o download, extraia o arquivo zip em um diretório de fácil acesso, como C:\GLFW. Agora que o glfw está baixado,
+                  é necessário configurar a biblioteca.</p>
+    
+                  <p>
+                    Abra o Visual Studio e crie um novo projeto. 
+                Selecione a opção “Aplicativo de Console” e clique em “Avançar”.
+                 Dê um nome ao seu projeto e escolha um local no seu computador para salvá-lo. 
+                 Clique em “Criar” e seu novo projeto será gerado. Com o projeto aberto, 
+                 é hora de configurar as propriedades para incluir o GLFW. Clique com o botão direito no nome do seu projeto no "Solution Explorer" e selecione "Properties".
+                  No menu à esquerda, você verá várias opções; expanda “C/C++” e selecione “General”. Aqui, você deve adicionar o diretório da pasta include do GLFW. Para isso, 
+                  clique em “Additional Include Directories” e adicione o caminho correspondente, como C:\GLFW\include. Agora, você precisa configurar o linker. Vá para “Linker” > 
+                  “General” no menu à esquerda. Em “Additional Library Directories”, adicione o caminho para a pasta lib do GLFW,
+                   que pode ser C:\GLFW\lib. Depois de adicionar o diretório, você precisa incluir as bibliotecas específicas que seu projeto usará. 
+                   Vá para “Linker” > “Input” e, em “Additional Dependencies”, adicione as seguintes linhas:
+                    glfw3.lib e opengl32.lib. Isso garantirá que seu projeto reconheça a biblioteca GLFW e a biblioteca do OpenGL,
+                     que é essencial para renderização gráfica. A
+                     pós configurar as dependências, será necessário ir para Pré-processador e em definições do Pré-processador coloque “GLFW_INCLUDE_NONE;”; com isso, 
+                     o glfw já irá funcionar, porém ainda falta configurar o glad.
+                  </p>
+    
+                  <h2>GLAD</h2>
+                  <p>Primeiro, acesse o site oficial do GLAD em https://glad.dav1d.de/. Escolha a versão do OpenGL que você precisa (geralmente a versão mais recente é recomendada), selecione o perfil como Core (caso queira usar funções básicas de OpenGL), dpeois disso, clique em "Generate" para gerar o código necessário. Após o download, extraia o arquivo zipado. Cole a pasta glad e KHR dentro do include da sua pasta GLFW e então adicione o arquivo glad.c dentro do seu projeto.</p>
+                  <p>
+                    O vídeo abaixo, resume a instalação do glfw e glad.
+                  </p>
+                  
+                  <h2>Estrutura do programa</h2>
+                  <p>Todo o programa irá ficar inicialmente dentro de um arquivo main.cpp e haverá diversos métodos, no qual todos serão chamados na função de entrada(função main)</p>
+                
+                <h2>Iniciando a janela</h2>
+                <p>Para criar uma janela em OpenGL, é necessário primeiro iniciar o glfw, para então criar uma instância da classe GLFWwindow; Feito isso, se adiciona um contexto gráfico e então inicia o glad.</p>
+                
+                <p>*A inicialização do glfw consiste em usar o metodo <span class="main-code-inline">glfwInit();</span></p>
+                <p>*Na instanciação do GLFWwindow se usa o <span class="main-code-inline">glfwCreateWindow. glfwCreateWindow(1, 1, "applicação", nullptr, nullptr)</span> </p>
+                <p>*Para setar o contexto gráfico se usa a função  <span class="main-code-inline">glfwMakeContextCurrent(window)</span></p>
+                <p>*A inicialização do glad consiste em usar a função <span class="main-code-inline">gladLoadGLLoader((GLADloadproc, glfwGetProcAddress ))</span></p>
+    
+                <h2>Loop principal</h2>
+                <p>Em toda aplicação OpenGL, haverá um loop que irá rodar enquanto a aplicação estiver ativa. Dentro do loop principal, é onde funções de renderização, e de atualização da janela será chamadas.</p>
+                  
+                <p>A função glfwWindowShouldClose retorna true se a janela for fechada, então usaremos ela para detectar se a aplicação ainda está ativa. Faremos isso assim:
+                </p>
+    
+                <div class="main-code">
+                    <span class="main-code__line-code">while(glfwWindowShouldClose(window) )</span>
+                    <span class="main-code__line-code">{</span>
+                    
+                        <span class="main-code__line-code">}</span>
+                </div>
+                    <p>Dentro do loop principal, é onde vamos tratar os eventos e para isso, usamos a função glfwPollEvents. Com isso, já será possivel trabalhar com eventos, como o do teclado ou mouse.
+                    </p>
+    
+                    <p>Há ainda um conceito importante que é o framebuffer. O framebuffer representa uma região na memoria ram, onde a GPU armazena dados da renderização de uma cena antes de ser exibido na tela. Dentro de cada iteração do loop principal, é necessário limpar o frameBuffer e trocar os buffers de exibição.</p>
+                   <p>Para isso, são usadas duas funções: glfwSwapBuffers e glClear.</p>
+                   <p>Aqui o código completo:</p>
+                    
+                   <span class="main-code__line-code"></span>
+               
+    
+    <div class="main-code">
+        <span class="main-code__line-code">#include &lt;GLFW/glfw3.h&gt;</span>
+        <span class="main-code__line-code">#include &lt;glad/glad.h&gt;</span>
+        <span class="main-code__line-code"><span class="main-code__var">int</span> main() </span>{
+        <span class="main-code__align">
+            <span class="main-code__line-code"><span class="main-code__function">glfwInit</span>(); </span>
+            <span class="main-code__line-code"><span class="main-code__function">glfwCreateWindow</span>(400, 400, "applicação", nullptr, nullptr)</span>
+             <span class="main-code__line-code"><span class="main-code__function">glfwCreateWindow</span>(400, 400, "applicação", nullptr, nullptr)</span>
+            <span class="main-code__line-code"><span class="main-code__function">glfwMakeContextCurrent</span>(window) </span>
+             <span class="main-code__line-code"><span class="main-code__function">gladLoadGLLoader</span>((<span class="main-code__class">GLADloadproc</span>), <span class="main-code__function">glfwGetProcAddress</span>);</span>
+            <span class="main-code__line-code"> <span class="main-code__loop">while</span>(<span class="main-code__function">glfwWindowShouldClose</span>(window))</span>
+            <span class="main-code__line-code">{</span>
+            <span class="main-code__align">
+                <span class="main-code__line-code"><span class="main-code__function">glfwPollEvents</span> ();</span>
+                <span class="main-code__line-code"><span class="main-code__function">glClear</span>(<span class="main-code__macro">GL_COLOR_BUFFER_BIT</span>);</span>
+                 <span class="main-code__line-code"><span class="main-code__function">glfwSwapBuffers</span> (window); </span>
+            </span>
+            <span class="main-code__line-code">}</span>
+        </span>
+        <span class="main-code__line-code">}</span>
+    </div>
+    </main>
+    <script src="script.js"></script>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="header-container">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+           <li id="fundamentos"><a href="#">Fundamentos de OpenGL</a>
+            <ul id="Fundamentos-list">
+                <li><a href="Criando Janela.html">Criando uma aplicação</a></li>
+                <li><a href="Renderizando um triangulo.html">Renderizando uma triangulo</a></li>
+                <li><a href="Iniciando um shader.html">Iniciando shader</a></li>
+                <li><a href="Adicionando Movimento.html">Adicionando movimento</a></li>
+            </ul>
+           </li>
+        </ul>
+    </nav>
+    <nav class="header-container__mobile">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+           <li id="fundamentos1"><a href="#">Fundamentos de OpenGL</a>
+            <ul id="Fundamentos-list1">
+                <li><a href="Criando Janela.html">Criando uma aplicação</a></li>
+                <li><a href="Renderizando uma triangulo.html">Renderizando uma triangulo</a></li>
+                <li><a href="Iniciando um shader.html">Iniciando shader</a></li>
+                <li><a href="Adicionando Movimento.html">Adicionando movimento</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+            </ul>
+           </li>
+        </ul>
+    </nav>
+    <main>
+        <h2>Teoria sobre o shader</h2>
+        <p>O shader define como os gráficos são processados e renderizados na GPU, controlando transformações, cores, luzes e efeitos visuais. 
+            <br> <br>Como já mencionado no artigo anterior, os shaders rodam dentro da Graphics pipeline.</p>
+           <h2>Construção de um shader</h2>
+           <p>Há dois tipos de shaders necessários: o vertex shader e o fragment shader. O vertex shader processa os vértices do objeto, enquanto o fragment shader define a cor do pixel 
+            As etapas de construção de um shader são: escrever um código GLSL, criar o shader, compilar o shader e, por último, criar um programa shader.</p>
+           </p>
+           <h2>GLSL</h2>
+           <p>O código GLSL que irá definir como o shader será estruturado. O glsl é uma linguagem propria, que é usado somente para construir shader. 
+            Existe uma particularidade no código GLSL, que é a seguinte: você sempre deve iniciar especificando qual versão do GLSL você irá usar. 
+            Abaixo um código GLSL de demonstração:
+            <br> <br>
+            <div class="main-code">
+                <span class="main-code__line-code">#version 330 core</span>
+                <span class="main-code__line-code">layout(location = 0) in vec3 pos;</span>
+                <span class="main-code__line-code">void main()
+                   <br> {<br>
+                    <span class="main-code__align">
+                        gl_Position = vec4(pos, 1.0);
+                    </span>
+                
+                }</span>
+            </div>
+           </p>
+           <br>
+           <p>Este código funciona da seguinte forma: 
+            <br>Primeiro se informa a versão do GLSL
+            <br>Após isso, usa-se o layout para especificar como os dados são organizados e passados entre os shaders e o pipeline gráfico do OpenGL.
+            <br><br>Com o que temos em mão, agora será possivel explicar melhor a função glVertexAttribPointer falada no artigo anterior.
+
+            <p> Quando você prepara os dados de entrada para o vertex shader, 
+                você usa a função glVertexAttribPointer para especificar como os dados dos atributos de vértices devem ser interpretados. 
+                O parâmetro que você passa para essa função é a localização do atributo,
+                 ou seja, o índice que você definiu no layout(location = x) no GLSL.</p>
+                <br>
+                 <p>Perceba que o código mostrado acima tem um método main, isso acontece pois o metodo main
+                    é o ponto de entrada do shader. Em GLSL, como em muitas linguagens de programação, a execução começa dentro dessa função.
+                 </p>
+                 <br>
+                 <p>Com relação a linha "gl_Position = vec4(pos, 1.0);" 
+                    esta parte define a posição final do vértice no espaço de clipping 
+                    (a posição que o vértice terá após passar pelos estágios do pipeline gráfico).
+                 </p>
+           </p>
+           <h2>Fragment Shader e vertex shader</h2>
+           <p>Sempre que você quiser implementar shader em seu programa, você precisa adicionar dois tipos de shader, que são eles o vertex shader e o fragment shader.
+            Com relação ao vertex shader, a implementação já foi mostrada acima. Existem várias maneiras de se criar esses shaders, porém inicialmente,
+            colocamos dentro de duas varias const char*. O código abaixo mostra isso;
+           </p>
+           <div class="main-code">
+            <span class="main-code__line-code">const char* vertexShader = R"(</span>
+            <span class="main-code__line-code">#version 330 core</span>
+            <span class="main-code__line-code">layout(location = 0) in vec3 pos;</span>
+            <span class="main-code__line-code">void main()
+               <br> {<br>
+                <span class="main-code__align">
+                    gl_Position = vec4(pos, 1.0);
+                </span>
+            
+            })"; <br>
+            <br>
+            const char* fragmentShader = R"( 
+                <br> <span class="main-code__line-code">#version 330 core</span>
+                <span class="main-code__line-code">layout(location = 0) <span class="target">out</span> vec4 color;</span>
+                <span class="main-code__line-code">void main(){<br></span>
+                   <div class="main-code__align">
+                    <span class="main-code__line-code"><span class="target">color =</span> vec4(1.0, 0.0, 0.0, 1.0)</span>
+                   </div>
+                }
+            )";
+        </span>
+    </div>
+        <p>Após criar o codigo fonte do shader, é preciso criar um objeto de shader, onde iremos jogar o código fonte que acabamos de criar.
+            Para fazer isso, se utiliza a função glCreateShader. Abaixo, uma demonstração. <br>
+            <span class="main-code-inline">unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);</span>
+        </p> <br>
+        <p>Precisamos criar um objeto de shader para o vertex shader e outro para o fragment. Dessa forma: <br>
+            <span class="main-code-inline">unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);</span>
+            <span class="main-code-inline">unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);</span>
+           <br> Após isso, é anexado o código fonte do shader. Utiliza-se a função: <br> <span class="target">glShaderSource</span>(GLuint shader, GLsizei count, const GLchar *const*string, const GLint *length);</p>
+            <br>
+           <p>É preciso que o objeto de shader seja compilado para que o shader funcione. Para isso, Utiliza-se a função glCompileShader.</p>
+            <p>Depois de criar os objetos de shader, é preciso implementar um shader program, onde será armazenado os objeto de shader.
+                manusear um shader program, consiste em cria-lo usando glCreateProgram, anexar os objetos de shader, usando glAttachShader e por
+                ultimo, validar o shaderProgra., usando tres funções, que são: glLinkProgram e glValidateProgram e glUseProgram.
+                Abaixo, um código de implementação.
+            </p>
+            <div class="main-code">
+                <span class="main-code__line-code">#include &lt;GLFW/glfw3.h&gt;</span>
+                <span class="main-code__line-code">#include &lt;glad/glad.h&gt;</span>
+                <span class="main-code__line-code"><span class="main-code__var">unsigned int</span> VBO;</span>
+                <span class="main-code__line-code">void setupShader(){</span></span><br>
+                    <div class="main-code__align">
+                        <span class="main-code__line-code">const char* vertexShader = R"(</span>
+                        <div class="main-code__align">
+                            <span class="main-code__line-code">#version 330 core</span>
+                            <span class="main-code__line-code">layout(location = 0) in vec3 pos;</span>
+                            <span class="main-code__line-code">void main()
+                               <br> {<br>
+                                <span class="main-code__align">
+                                    gl_Position = vec4(pos, 1.0);
+                                </span>
+                        </div>
+                    
+                    })"; <br>
+                    <br>
+                    const char* fragmentShader = R"( 
+                        <div class="main-code__align">
+                            <br> <span class="main-code__line-code">#version 330 core</span>
+                            <span class="main-code__line-code">layout(location = 0) out vec4 color;</span>
+                            <span class="main-code__line-code">void main(){<br></span>
+                               <div class="main-code__align">
+                                <span class="main-code__line-code">color =vec4(1.0, 0.0, 0.0, 1.0)</span>
+                               </div>
+                        </div>
+                        }
+                    )"; <br>
+                    <span class="main-code__line-code"><span class="main-code__var">unsigned int</span> vertex = glCreateShader(<span class="main-code__macro">GL_VERTEX_SHADER</span>);</span>
+                    <span class="main-code__line-code"><span class="main-code__function">glShaderSource</span>(vertex, 1, &vertexShader);</span>
+                    <span class="main-code__line-code"><span class="main-code__function">glCompileShader</span>(vertex);</span>
+                    <span class="main-code__line-code"><span class="main-code__var">unsigned int</span> fragment = <span class="main-code__function">glCreateShader</span>(<span class="main-code__macro">GL_FRAGMENT_SHADER</span>);</span>
+                    <span class="main-code__line-code"><span class="main-code__function">glShaderSource</span>(fragment, 1, &fragmentShader);</span>
+                    <span class="main-code__line-code"><span class="main-code__function">glCompileShader</span>(fragment);</span>
+                    <span class="main-code__line-code"><span class="main-code__var">unsigned int</span> idShader = <span class="main-code__function">glCreateProgram</span>();</span>
+                    <span class="main-code__line-code"><span class="main-code__function">glAttachShader</span>(idShader, vertex);</span>
+                    <span class="main-code__line-code"><span class="main-code__function">glAttachShader</span>(idShader, fragment);</span>
+                    <span class="main-code__line-code"><span class="main-code__function">glLinkProgram</span>(idShader);</span>
+                    <span class="main-code__line-code"><span class="main-code__function">glValidateProgram</span>(idShader);</span>
+                    <span class="main-code__line-code"><span class="main-code__function">glUseProgram</span>(idShader);</span>
+             
+                    </div>
+                }
+                <span class="main-code__line-code"><span class="main-code__var">void</span> initialize(){</span>
+                    <br>
+                
+                    <span class="main-code__align">
+                        <span class="main-code__line-code"><span class="main-code__var">float</span> vertices[] = {</span>
+                            <br>
+                            -0.5f, -0.5f, 0.0f, <br>
+                            0.5f, -0.5f, 0.0f, <br>
+                            0.0f,  0.5f, 0.0f<br>
+                        };
+                        <span class="main-code__line-code"> <span class="main-code__function">glGenBuffers</span>(1, &VBO);</span>
+                        <span class="main-code__line-code"> <span class="main-code__function">glBindBuffer</span>(<span class="main-code__macro">GL_ARRAY_BUFFER</span>, VBO);</span>
+                        <span class="main-code__line-code"><span class="main-code__function">glBufferData</span>(<span class="main-code__macro">GL_ARRAY_BUFFER</span>, <span class="main-code__var">sizeof</span>(vertices), vertices, <span class="main-code__macro">GL_STATIC_DRAW</span>);</span>
+                        <span class="main-code__line-code"><span class="main-code__function">glEnableVertexAttribArray</span>(0);</span> 
+                        <span class="main-code__line-code"> <span class="main-code__function">glVertexAttribPointer</span>(0, 3, GL_FLOAT, GL_FALSE, 3 * <span class="main-code__var">sizeof</span>(float), 0);</span>
+                    </span>
+                <br>
+            }
+            <span class="main-code__line-code"><span class="main-code__var">int</span> main() </span>{
+            <span class="main-code__align">
+                <span class="main-code__line-code"><span class="main-code__function">glfwInit</span>(); </span>
+                <span class="main-code__line-code"><span class="main-code__class">GLFWwindow</span>* window = <span class="main-code__function">glfwCreateWindow</span>(400, 400, "app", nullptr, nullptr);</span>
+                <span class="main-code__line-code"><span class="main-code__function">glfwMakeContextCurrent</span>(window);</span>
+                 <span class="main-code__line-code"><span class="main-code__function">gladLoadGLLoader</span>((<span class="main-code__class">GLADloadproc</span>) <span class="main-code__function">glfwGetProcAddress</span>);</span>
+                 <span class="main-code__line-code"><span class="main-code__function">initialize</span>();</span>
+                 <span class="main-code__line-code"> <span class="main-code__loop">while</span>(<span class="main-code__function">!glfwWindowShouldClose</span>(window))</span>
+                <span class="main-code__line-code">{</span>
+                <span class="main-code__align">
+                    <span class="main-code__line-code"><span class="main-code__function">glfwPollEvents</span> ();</span>
+                    <span class="main-code__line-code"><span class="main-code__macro">glClear</span>(<span class="main-code__macro">GL_COLOR_BUFFER_BIT</span>);</span>
+                    <span class="main-code__line-code"><span class="main-code__macro">glDrawArrays</span>(<span class="main-code__macro">GL_TRIANGLES</span>, 0, 3);</span> 
+                    <span class="main-code__line-code"><span class="main-code__function">glfwSwapBuffers</span> (window); </span>
+                </span>
+                <span class="main-code__line-code">}</span>
+            </span>
+            <span class="main-code__line-code">}</span>
+            </div>
+        
+               
+        </main>
+    <script src="script.js"></script>
+    <script>
+         const target = document.getElementsByClassName("target"); // HTMLCollection
+    // Transforma em array para usar forEach
+    Array.from(target).forEach(function (element, index) {
+        element.addEventListener("mouseenter", function () {
+            addShowMessage(element, index);
+        });
+        element.addEventListener("mouseleave", function () {
+            removeShowMessage();
+        });
+    });
+
+    let currentMessage = null; // Referência para a mensagem exibida
+
+    function addShowMessage(element, index) {
+        // Cria o container da mensagem
+        const ShowP = document.createElement("div");
+        ShowP.className = "showMessage";
+        ShowP.style.position = "absolute";
+        ShowP.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+        ShowP.style.color = "white";
+        ShowP.style.padding = "5px";
+        ShowP.style.borderRadius = "5px";
+        ShowP.style.width = "300px";
+        const rect = element.getBoundingClientRect();
+        const posX = rect.left + window.scrollX; // Considera o scroll horizontal
+        const posY = rect.top + window.scrollY; // Considera o scroll vertical
+
+        ShowP.style.left = `${posX}px`;
+        ShowP.style.top = `${posY + rect.height + 5}px`; // Ajusta abaixo do elemento
+
+        switch (index) {
+            case 0:
+                ShowP.textContent =
+                    "Declara uma variável de saída. Aqui, a variável color armazenará a cor calculada no shader";
+                break;
+            case 1:
+                ShowP.textContent =
+                    "Atribui o valor calculado à variável de saída color. Isso significa que todos os fragmentos renderizados com este shader serão da cor vermelha opaca";
+
+                break;
+                case 2:
+                    ShowP.textContent = "Há 5 parametros na função glShaderSource. A seguir, cada um dos parametros: Parametro 1: O identificador do objeto de shader ao qual o código-fonte será anexado. No nosso caso, são as variaveis vertex e fragment. Parametro 2: O número de strings na array string, geralmente é apenas 1. Parametro 3: Um ponteiro para uma array de strings contendo o código-fonte GLSL. No código mostrado acima, as variáveis vertexShader e fragmentShader representam esses ponteiros. Parametro 4: Um ponteiro para uma array de inteiros que especifica o tamanho de cada string, geralmente é um nullptr"
+                    break;
+            default:
+                ShowP.textContent = "Mensagem padrão para índices maiores.";
+        }
+
+        document.body.appendChild(ShowP);
+        currentMessage = ShowP; // Armazena a mensagem atual
+    }
+
+    function removeShowMessage() {
+        if (currentMessage) {
+            currentMessage.remove();
+            currentMessage = null;
+        }
+    }
+
+    </script>
+</body>
+</html>

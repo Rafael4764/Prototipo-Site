@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="header-container">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+           <li id="fundamentos"><a href="#">Fundamentos de OpenGL</a>
+            <ul id="Fundamentos-list">
+                <li><a href="Criando Janela.html">Criando uma aplicação</a></li>
+                <li><a href="Renderizando um triangulo.html">Renderizando uma triangulo</a></li>
+                <li><a href="Iniciando um shader.html">Iniciando shader</a></li>
+                <li><a href="Adicionando Movimento.html">Adicionando movimento</a></li>
+            </ul>
+           </li>
+        </ul>
+    </nav>
+    <nav class="header-container__mobile">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+           <li id="fundamentos1"><a href="#">Fundamentos de OpenGL</a>
+            <ul id="Fundamentos-list1">
+                <li><a href="Criando Janela.html">Criando uma aplicação</a></li>
+                <li><a href="Renderizando uma triangulo.html">Renderizando uma triangulo</a></li>
+                <li><a href="Iniciando um shader.html">Iniciando shader</a></li>
+                <li><a href="Adicionando Movimento.html">Adicionando movimento</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+            </ul>
+           </li>
+        </ul>
+    </nav>
+    <main>
+        <h2>MVP matrix</h2>
+        <p>Com os conhecimentos dos outros artigos, já é possivel Renderizar um objeto na window e adicionar um shader, porém, o retangulo que 
+            criamos, é estático. 
+
+            Nesse artigo, será discutido como adicionar movimentação a esse retangulo. Para fazer isso, é utilizado o conceito de MVP matrix, que 
+            consiste em uma matriz composta. essa matriz MVP é formada por três matrizes, e são elas: <br> <br>
+            <b>Model: </b> responsável por definir a posição, a rotação e a escala. <br>
+            <b>View: </b> define a posição da camera e sua orientação. <br>
+            <b>Projection: </b> Define como a cena será projetada na tela.
+            A matriz final é obtida multiplicando essas três matrizes na ordem correta: MVP = P . V . M
+        
+            É importante dizer que o pipeline gráfico moderno não aplica automaticamente transformações aos vértices. Isso significa que precisamos passar manualmente a matriz MVP para o shader.
+        </p><br>
+        <span class="center">Abaixo, as alterações no shader necessárias:</span>
+        <div class="main-code">
+            #version 330 Core <br>
+            layout(location = 0) in vec4 pos;<br>
+            uniform mat4 model; <br>
+            uniform mat4 view;<br>
+            uniform mat4 proj;<br>
+            void main()<br>
+            {<br>
+                gl_Position = proj * view * model * pos; <br>
+            }
+        </div>
+        <h2>Uniform</h2>
+        <p>O código acima utiliza um uniform para definir a MVP matrix.
+            Os uniforms são variáveis que permanecem constantes durante a execução de um shader program para um determinado draw call. Eles são amplamente usados para passar dados da CPU para os shaders, como matrizes de transformação, cores, posições de luzes e outras informações globais.    
+            <br>
+            Agora, é necessário definir os valores que serão usados no MVP matrix, para isso, se utiliza a função 
+            <span class="main-code-inline">UniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value)</span> <br>
+     <br>
+            Os parametros usados são: <br>
+            <b>location</b> → O identificador do uniform no shader. Esse valor é obtido com glGetUniformLocation() <br>
+            <b>count</b> → O número de matrizes 4x4 que estamos enviando. Normalmente é 1 <br>
+            <b>transpose</b> → Indica se a matriz deve ser transposta antes de ser usada. <br>
+            <b>value</b> → O ponteiro para os dados da matriz.
+        </p>
+        <h2>GLM</h2>
+        <p>Para utilizar glUniformMatrix4fv e enviar a MVP Matrix para um shader no OpenGL, primeiro precisamos criar e configurar as matrizes model, view e projection. Usamos a biblioteca GLM para isso, garantindo cálculos eficientes de transformação.
+            <br>Confira no vídeo abaixo, como instalar o glm.
+            <br><br>
+            Agora que o glm está configurado, podemos criar matrizes 4x4 usando glm::mat4 e em seguida anexar os valores de cada uma das
+            matriz ao seu respectivo uniform do shader.<br>
+            No video abaixo, é dada uma explicação mais detalha sobre essa implementação.
+        </p>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

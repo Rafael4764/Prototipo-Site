@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="header-container">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+           <li id="fundamentos"><a href="#">Fundamentos de OpenGL</a>
+            <ul id="Fundamentos-list">
+                <li><a href="Criando Janela.html">Criando uma aplicação</a></li>
+                <li><a href="Renderizando um triangulo.html">Renderizando uma triangulo</a></li>
+                <li><a href="Iniciando um shader.html">Iniciando shader</a></li>
+                <li><a href="Adicionando Movimento.html">Adicionando movimento</a></li>
+            </ul>
+           </li>
+        </ul>
+    </nav>
+    <nav class="header-container__mobile">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+           <li id="fundamentos1"><a href="#">Fundamentos de OpenGL</a>
+            <ul id="Fundamentos-list1">
+                <li><a href="Criando Janela.html">Criando uma aplicação</a></li>
+                <li><a href="Renderizando um triangulo.html">Renderizando uma triangulo</a></li>
+                <li><a href="Iniciando um shader.html">Iniciando shader</a></li>
+                <li><a href="Adicionando Movimento.html">Adicionando movimento</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+                <li><a href="Renderizando uma janela.html">Renderizando uma janela</a></li>
+            </ul>
+           </li>
+        </ul>
+    </nav>
+    <main>
+        <h2>Graphics pipeline</h2>
+        <p>Em computação gráfica, todos os objetos são 3D e sempre que vamos renderizar, precisamos tratar esses objetos para a nossa tela 2D. O processo de tratamento de dados é feito pelo graphics pipeline.
+            O Graphics Pipeline processa dados (vértices, texturas) na GPU, transformando-os em imagens renderizadas por meio de cálculos, transformações e rasterização. É dentro da pipeline que estão os shaders, que são um programa especifico para tratar os dados.
+        </p>
+
+        <h2>Vertices em OpenGL</h2>
+        <p>Para renderizar formas geometricas, a pipeline utiliza o conceito de vertice, que nele armazena valores como a posição, cor, texturas e normais. Todos os vertices serão processados por shaders. Para definir os vertices usado, é criado um array de float e 3 elementos do array representa uma coordenada de vertice.
+            O código abaixo esclarece melhor, sobre a criação de vertice:
+        </p>
+        <div class="main-code">
+            <span class="main-code__line-code"><span class="main-code__var">float</span> vertices[] = {</span>
+                <br>
+                -0.5f, -0.5f, 0.0f, <br>
+                0.5f, -0.5f, 0.0f, <br>
+                0.0f,  0.5f, 0.0f<br>
+            };
+        </div>
+        <h2>VBO</h2>
+        <p>A primeira etapa de um processo de renderização é enviar dados de vertice(vertex data) para a GPU. Em OpenGL, o recurso responsavel por enviar dados de vertice para a GPU é chamado de VBO e o manuseamento dele consiste em criar um vbo, associar o vbo a um tipo de dado que será usado na pipeline e então enviar para a gpu os dados.</p>
+        <p>Para criar um vbo, usamos a função glGenBuffers(GLsizei n, GLuint *buffers) e ela tem 2 parametros.</p><br>
+        <hr>
+        <p>* GLsizei especifica o número de buffers que você deseja gerar. <br>
+           * GLuint é um ponteiro para um array onde os identificadores dos buffers gerados serão armazenados.
+            <br>
+            Assim fica a implementação:
+            <span class="main-code-inline">                  <span class="main-code__line-code"> <span class="main-code__function">glGenBuffers</span>(1, &VBO);</span></span>
+        </p><br>
+            <hr>
+            <p>Para associar um buffer se utiliza a função glBindBuffer(GLenum target, GLuint buffer)<br>
+            *O primeiro parametro irá definir qual será o tipo de buffer<br>
+            *o segundo parametro é a variavel que indentifica o buffer a ser usado.
+            <br>Assim se da a implementação: <span class="main-code-inline"><span class="main-code__line-code"> <span class="main-code__function">glBindBuffer</span>(<span class="main-code__macro">GL_ARRAY_BUFFER</span>, VBO);</span></span></p><br>
+          <hr>
+        <p class="text-Relative"> Para enviar os dados para gpu, se utiliza a função glBufferData(GLenum target, GLsizeiptr size, const void *data, GLenum usage). <br>
+            *Target especifica o tipo de buffer(é sempre o mesmo valor do glBindBuffer) <br>
+            *O segundo parametro especifica o tamanho em bytes que será alocado no buffer.  <br>
+            *O parametro data aponta para o array que você estiver armazenando os vertices. <br>
+            *O parametro usage especifica como os dados serão usados. Os valores mais usados são: 
+            <br><span class="target">GL_STATIC_DRAW</span> e <span class="target">GL_DYNAMIC_DRAW</span>
+            <br>Assim fica a implementação: <span class="main-code-inline"> <span class="main-code__line-code"><span class="main-code__function">glBufferData</span>(<span class="main-code__macro">GL_ARRAY_BUFFER</span>, <span class="main-code__var">sizeof</span>(vertices), vertices, <span class="main-code__macro">GL_STATIC_DRAW</span>);</span></span>
+        </p>
+        <hr>
+
+        <br>
+        <p>
+            Para informar ao OpenGL como acessar e interpretar esses dados,
+             usamos glVertexAttribPointer. Esse comando define o formato e a localização de um atributo de vértice. Porém, para que esse atributo seja efetivamente usado no shader, ele precisa ser ativado, e é aí que entra o glEnableVertexAttribArray
+             . Assim fica a implementação:
+             <br><br>
+             <div class="main-code">
+              <span class="main-code__line-code"><span class="main-code__function">glEnableVertexAttribArray</span>(0)</span> 
+              <span class="main-code__line-code"> <span class="main-code__function">glVertexAttribPointer</span>(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0)</span>
+             </div>
+        </p>
+        <BR></BR>
+        <hr>
+        <p>Para que o retangulo seja mostrado na tela, é necessário chamar a função glDrawArrays. A função deve ser chamada após o glClear.
+            No código fornecido abaixo, é mostrado a implementação.
+        </p>
+        <hr>
+        <br>
+        <div class="main-code">
+            <span class="main-code__line-code">#include &lt;GLFW/glfw3.h&gt;</span>
+            <span class="main-code__line-code">#include &lt;glad/glad.h&gt;</span>
+            <span class="main-code__line-code"><span class="main-code__var">unsigned int</span> VBO;</span>
+            <span class="main-code__line-code"><span class="main-code__var">void</span> initialize(){</span>
+                <br>
+            
+                <span class="main-code__align">
+                    <span class="main-code__line-code"><span class="main-code__var">float</span> vertices[] = {</span>
+                        <br>
+                        -0.5f, -0.5f, 0.0f, <br>
+                        0.5f, -0.5f, 0.0f, <br>
+                        0.0f,  0.5f, 0.0f<br>
+                    };
+                    <span class="main-code__line-code"> <span class="main-code__function">glGenBuffers</span>(1, &VBO);</span>
+                    <span class="main-code__line-code"> <span class="main-code__function">glBindBuffer</span>(<span class="main-code__macro">GL_ARRAY_BUFFER</span>, VBO);</span>
+                    <span class="main-code__line-code"><span class="main-code__function">glBufferData</span>(<span class="main-code__macro">GL_ARRAY_BUFFER</span>, <span class="main-code__var">sizeof</span>(vertices), vertices, <span class="main-code__macro">GL_STATIC_DRAW</span>);</span>
+                    <span class="main-code__line-code"><span class="main-code__function">glEnableVertexAttribArray</span>(0);</span> 
+                    <span class="main-code__line-code"> <span class="main-code__function">glVertexAttribPointer</span>(0, 3, GL_FLOAT, GL_FALSE, 3 * <span class="main-code__var">sizeof</span>(float), 0);</span>
+                </span>
+            <br>
+        }
+        <span class="main-code__line-code"><span class="main-code__var">int</span> main() </span>{
+        <span class="main-code__align">
+            <span class="main-code__line-code"><span class="main-code__function">glfwInit</span>(); </span>
+            <span class="main-code__line-code"><span class="main-code__class">GLFWwindow</span>* window = <span class="main-code__function">glfwCreateWindow</span>(400, 400, "app", nullptr, nullptr);</span>
+            <span class="main-code__line-code"><span class="main-code__function">glfwMakeContextCurrent</span>(window);</span>
+             <span class="main-code__line-code"><span class="main-code__function">gladLoadGLLoader</span>((<span class="main-code__class">GLADloadproc</span>) <span class="main-code__function">glfwGetProcAddress</span>);</span>
+             <span class="main-code__line-code"><span class="main-code__function">initialize</span>();</span>
+             <span class="main-code__line-code"> <span class="main-code__loop">while</span>(<span class="main-code__function">!glfwWindowShouldClose</span>(window))</span>
+            <span class="main-code__line-code">{</span>
+            <span class="main-code__align">
+                <span class="main-code__line-code"><span class="main-code__function">glfwPollEvents</span> ();</span>
+                <span class="main-code__line-code"><span class="main-code__macro">glClear</span>(<span class="main-code__macro">GL_COLOR_BUFFER_BIT</span>);</span>
+                <span class="main-code__line-code"><span class="main-code__macro">glDrawArrays</span>(GL_TRIANGLES, 0, 3);</span> 
+                <span class="main-code__line-code"><span class="main-code__function">glfwSwapBuffers</span> (window); </span>
+            </span>
+            <span class="main-code__line-code">}</span>
+        </span>
+        <span class="main-code__line-code">}</span>
+        </div>
+
+        <br>
+        <hr>
+        <p>Se tudo deu certo no seu código, a aplicação deve se parecer com isso:</p>
+        <br>
+        <img src="Renderizando um triangulo.html.png" alt="">
+        </main>
+    <script src="script.js"></script>
+    <script>
+       ;(function () {
+    const target = document.getElementsByClassName("target"); // HTMLCollection
+    // Transforma em array para usar forEach
+    Array.from(target).forEach(function (element, index) {
+        element.addEventListener("mouseenter", function () {
+            addShowMessage(element, index);
+        });
+        element.addEventListener("mouseleave", function () {
+            removeShowMessage();
+        });
+    });
+
+    let currentMessage = null; // Referência para a mensagem exibida
+
+    function addShowMessage(element, index) {
+        // Cria o container da mensagem
+        const ShowP = document.createElement("div");
+        ShowP.className = "showMessage";
+        ShowP.style.position = "absolute";
+        ShowP.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+        ShowP.style.color = "white";
+        ShowP.style.padding = "5px";
+        ShowP.style.borderRadius = "5px";
+
+        const rect = element.getBoundingClientRect();
+        const posX = rect.left + window.scrollX; // Considera o scroll horizontal
+        const posY = rect.top + window.scrollY; // Considera o scroll vertical
+
+        ShowP.style.left = `${posX}px`;
+        ShowP.style.top = `${posY + rect.height + 5}px`; // Ajusta abaixo do elemento
+
+        switch (index) {
+            case 0:
+                ShowP.textContent =
+                    "Os dados do buffer serão carregados uma vez (ou muito raramente) e serão usados para renderização repetidamente.";
+                break;
+            case 1:
+                ShowP.textContent =
+                    "Os dados são alterados frequentemente e usados muitas vezes.";
+                break;
+            default:
+                ShowP.textContent = "Mensagem padrão para índices maiores.";
+        }
+
+        document.body.appendChild(ShowP);
+        currentMessage = ShowP; // Armazena a mensagem atual
+    }
+
+    function removeShowMessage() {
+        if (currentMessage) {
+            currentMessage.remove();
+            currentMessage = null;
+        }
+    }
+})();
+    </script>
+</body>
+</html>
