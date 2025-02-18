@@ -39,14 +39,14 @@
     </nav>
     <main>
         <h2>MVP matrix</h2>
-        <p>Com os conhecimentos dos outros artigos, já é possivel Renderizar um objeto na window e adicionar um shader, porém, o retangulo que 
+        <p>Com os conhecimentos dos outros artigos, já é possivel renderizar um objeto na window e adicionar um shader, porém, o retangulo que 
             criamos, é estático. 
 
             Nesse artigo, será discutido como adicionar movimentação a esse retangulo. Para fazer isso, é utilizado o conceito de MVP matrix, que 
             consiste em uma matriz composta. essa matriz MVP é formada por três matrizes, e são elas: <br> <br>
             <b>Model: </b> responsável por definir a posição, a rotação e a escala. <br>
             <b>View: </b> define a posição da camera e sua orientação. <br>
-            <b>Projection: </b> Define como a cena será projetada na tela.
+            <b>Projection: </b> Define como a cena será projetada na tela. <br>
             A matriz final é obtida multiplicando essas três matrizes na ordem correta: MVP = P . V . M
         
             É importante dizer que o pipeline gráfico moderno não aplica automaticamente transformações aos vértices. Isso significa que precisamos passar manualmente a matriz MVP para o shader.
@@ -63,7 +63,7 @@
                 gl_Position = proj * view * model * pos; <br>
             }
         </div>
-        <h2>Uniform</h2>
+        <h2>o Conceito de uniform</h2>
         <p>O código acima utiliza um uniform para definir a MVP matrix.
             Os uniforms são variáveis que permanecem constantes durante a execução de um shader program para um determinado draw call. Eles são amplamente usados para passar dados da CPU para os shaders, como matrizes de transformação, cores, posições de luzes e outras informações globais.    
             <br>
@@ -77,13 +77,32 @@
             <b>value</b> → O ponteiro para os dados da matriz.
         </p>
         <h2>GLM</h2>
-        <p>Para utilizar glUniformMatrix4fv e enviar a MVP Matrix para um shader no OpenGL, primeiro precisamos criar e configurar as matrizes model, view e projection. Usamos a biblioteca GLM para isso, garantindo cálculos eficientes de transformação.
-            <br>Confira no vídeo abaixo, como instalar o glm.
-            <br><br>
-            Agora que o glm está configurado, podemos criar matrizes 4x4 usando glm::mat4 e em seguida anexar os valores de cada uma das
-            matriz ao seu respectivo uniform do shader.<br>
-            No video abaixo, é dada uma explicação mais detalha sobre essa implementação.
+        <p>Para criar a MVP matrix e enviar ao shader, utilizaremos a biblioteca glm;
+            
+            <p>Baixe o glm, via <a target="_blank" href="https://github.com/g-truc/glm">https://github.com/g-truc/glm</a>, extraia o arquivo, depois adicione o glm-master como diretorio de inclusão adicional no seu projeto.</p>
+            <p>Após isso, você já terá configurado o glm e apenas precisa adicionar agora os arquivos de inclusão.</p>
+            <div class="main-code-inline">
+#include                &lt;glm/glm.hpp&gt; <br>
+#include                &lt;glm/gtc/matrix_transform.hpp&gt; <br>
+            </div>
+            <p>Agora iremos aplicar os uniforms. Para isso, inicializamos três variaveis: a matriz Model como uma matriz identidade. <br>
+            a matriz View usando o glm::lookAt que posiciona e orienta a câmera a partir de três parâmetros: <br>
+                glm::lookAt(<br>
+                cameraPosition,  // Posição da câmera<br>
+                targetPosition,  // Para onde a câmera olha<br>
+                upVector         // Eixo "para cima" da câmera<br>
+            );<br>
+            Por ultimo, para a matriz projection, criaremos uma projeção em perspectiva, usando glm::perspective. Abaixo o código <br>
         </p>
+            <div class="main-code-inline">
+                glm::mat4 model = glm::mat4(1.0f); <br>
+                glm::mat4 view = glm::lookAt(glm::vec3(3.0f, 3.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 800.0f, 0.1f, 100.0f);
+                <span class="main-code__macro">glUniformMatrix4fv</span>(<span class="main-code__macro">glGetUniformLocation</span>(idShader,"model"), 1, GL_FALSE, &model[0][0]);
+                <span class="main-code__macro"> glUniformMatrix4fv</span>(<span class="main-code__macro">glGetUniformLocation</span>(idShader, "view"), 1, GL_FALSE, &view[0][0]);
+                <span class="main-code__macro">glUniformMatrix4fv</span>(<span class="main-code__macro">glGetUniformLocation</span>(idShader, "proj"), 1, GL_FALSE, &proj[0][0]);
+            </div>
+            <p>Como queremos implementar movimentação, não podemos usar constantes no view, para isso, criaremos 3 variáveis e são elas: camPos, camFront e camUp. O camPos, será responsavel por definir a posição da camera, já o camFront, define a posição que a camera está olhando. Com relação ao camUp, ele define o eixo "em cima" da camera.</p>
     </main>
     <script src="script.js"></script>
 </body>

@@ -128,7 +128,7 @@
             <div class="main-code">
                 <span class="main-code__line-code">#include &lt;GLFW/glfw3.h&gt;</span>
                 <span class="main-code__line-code">#include &lt;glad/glad.h&gt;</span>
-                <span class="main-code__line-code"><span class="main-code__var">unsigned int</span> VBO;</span>
+                <span class="main-code__line-code"><span class="main-code__var">unsigned int</span> VBO, idShader;</span>
                 <span class="main-code__line-code">void setupShader(){</span></span><br>
                     <div class="main-code__align">
                         <span class="main-code__line-code">const char* vertexShader = R"(</span>
@@ -161,7 +161,7 @@
                     <span class="main-code__line-code"><span class="main-code__var">unsigned int</span> fragment = <span class="main-code__function">glCreateShader</span>(<span class="main-code__macro">GL_FRAGMENT_SHADER</span>);</span>
                     <span class="main-code__line-code"><span class="main-code__function">glShaderSource</span>(fragment, 1, &fragmentShader);</span>
                     <span class="main-code__line-code"><span class="main-code__function">glCompileShader</span>(fragment);</span>
-                    <span class="main-code__line-code"><span class="main-code__var">unsigned int</span> idShader = <span class="main-code__function">glCreateProgram</span>();</span>
+                    <span class="main-code__line-code">idShader = <span class="main-code__function">glCreateProgram</span>();</span>
                     <span class="main-code__line-code"><span class="main-code__function">glAttachShader</span>(idShader, vertex);</span>
                     <span class="main-code__line-code"><span class="main-code__function">glAttachShader</span>(idShader, fragment);</span>
                     <span class="main-code__line-code"><span class="main-code__function">glLinkProgram</span>(idShader);</span>
