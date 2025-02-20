@@ -102,8 +102,107 @@
                 <span class="main-code__macro"> glUniformMatrix4fv</span>(<span class="main-code__macro">glGetUniformLocation</span>(idShader, "view"), 1, GL_FALSE, &view[0][0]);
                 <span class="main-code__macro">glUniformMatrix4fv</span>(<span class="main-code__macro">glGetUniformLocation</span>(idShader, "proj"), 1, GL_FALSE, &proj[0][0]);
             </div>
+            <br>   <br>
+            <h2>Aidionando movimento</h2>
             <p>Como queremos implementar movimentação, não podemos usar constantes no view, para isso, criaremos 3 variáveis e são elas: camPos, camFront e camUp. O camPos, será responsavel por definir a posição da camera, já o camFront, define a posição que a camera está olhando. Com relação ao camUp, ele define o eixo "em cima" da camera.</p>
-    </main>
+            <div class="main-code">
+                glm::vec3 camPos = glm::vec3(0.0, 0.0, 10.0);
+                glm::Vec3 camFront = glm::vec3(0.0, 0.0, -1.0);
+                glm::vec3 camUp = glm::vec3(0.0, 1.0, 0.0);
+            </div>
+            <br>
+            <p>Após criar as variáveis, criaremos uma função chamada KeyboardInput onde aplicaremos a logica da movimentação.
+                Dentro da função KeyboardInput, será chamado a função glfwGetKey. Essa função consiste em dois parametros, no qual o primeiro é a janela que estamos manipulando e o segundo parametro é a tecla que queremos checar.
+                <div class="main-code-fixed">
+                    <span class="main-code__line-code">#include &lt;GLFW/glfw3.h&gt;</span>
+                    <span class="main-code__line-code">#include &lt;glad/glad.h&gt;</span>
+                    <span class="main-code__line-code">#include &lt;glm/gtc/matrix_transform.hpp&gt;</span>
+                    <span class="main-code__line-code">#include &lt;glm/glm.hpp&gt;</span>
+                    <span class="main-code__line-code"><span class="main-code__var">unsigned int</span> VBO, idShader;</span>
+                    <span class="main-code__line-code">glm::<span class="main-code__class">vec3</span> camPos = glm::<span class="main-code__class">vec3</span>(0.0, 0.0, 10.0);</span>
+                    <span class="main-code__line-code">glm::<span class="main-code__class">vec3</span> camFront = glm::<span class="main-code__class">vec3</span>(0.0, 0.0, -1.0);</span>
+                    <span class="main-code__line-code">glm::<span class="main-code__class">vec3</span> camUp = glm::<span class="main-code__class">vec3</span>(0.0, 1.0, 0.0);</span>
+                    <span class="main-code__line-code">void setupShader(){</span></span><br>
+                        <div class="main-code__align">
+                            <span class="main-code__line-code">const char* vertexShader = R"(</span>
+                            <div class="main-code__align">
+                                <span class="main-code__line-code">#version 330 core</span>
+                                <span class="main-code__line-code">layout(location = 0) in vec3 pos;</span>
+                                <span class="main-code__line-code">void main()
+                                   <br> {<br>
+                                    <span class="main-code__align">
+                                        gl_Position = vec4(pos, 1.0);
+                                    </span>
+                            </div>
+                        
+                        })"; <br>
+                        <br>
+                        const char* fragmentShader = R"( 
+                            <div class="main-code__align">
+                                <br> <span class="main-code__line-code">#version 330 core</span>
+                                <span class="main-code__line-code">layout(location = 0) out vec4 color;</span>
+                                <span class="main-code__line-code">void main(){<br></span>
+                                   <div class="main-code__align">
+                                    <span class="main-code__line-code">color =vec4(1.0, 0.0, 0.0, 1.0)</span>
+                                   </div>
+                            </div>
+                            }
+                        )"; <br>
+                        <span class="main-code__line-code"><span class="main-code__var">unsigned int</span> vertex = glCreateShader(<span class="main-code__macro">GL_VERTEX_SHADER</span>);</span>
+                        <span class="main-code__line-code"><span class="main-code__function">glShaderSource</span>(vertex, 1, &vertexShader);</span>
+                        <span class="main-code__line-code"><span class="main-code__function">glCompileShader</span>(vertex);</span>
+                        <span class="main-code__line-code"><span class="main-code__var">unsigned int</span> fragment = <span class="main-code__function">glCreateShader</span>(<span class="main-code__macro">GL_FRAGMENT_SHADER</span>);</span>
+                        <span class="main-code__line-code"><span class="main-code__function">glShaderSource</span>(fragment, 1, &fragmentShader);</span>
+                        <span class="main-code__line-code"><span class="main-code__function">glCompileShader</span>(fragment);</span>
+                        <span class="main-code__line-code">idShader = <span class="main-code__function">glCreateProgram</span>();</span>
+                        <span class="main-code__line-code"><span class="main-code__function">glAttachShader</span>(idShader, vertex);</span>
+                        <span class="main-code__line-code"><span class="main-code__function">glAttachShader</span>(idShader, fragment);</span>
+                        <span class="main-code__line-code"><span class="main-code__function">glLinkProgram</span>(idShader);</span>
+                        <span class="main-code__line-code"><span class="main-code__function">glValidateProgram</span>(idShader);</span>
+                        <span class="main-code__line-code"><span class="main-code__function">glUseProgram</span>(idShader);</span>
+                 
+                        </div>
+                    }
+                    <span class="main-code__line-code"><span class="main-code__var">void</span> initialize(){</span>
+                        <br>
+                    
+                        <span class="main-code__align">
+                            <span class="main-code__line-code"><span class="main-code__var">float</span> vertices[] = {</span>
+                                <br>
+                                -0.5f, -0.5f, 0.0f, <br>
+                                0.5f, -0.5f, 0.0f, <br>
+                                0.0f,  0.5f, 0.0f<br>
+                            };
+                            <span class="main-code__line-code"> <span class="main-code__function">glGenBuffers</span>(1, &VBO);</span>
+                            <span class="main-code__line-code"> <span class="main-code__function">glBindBuffer</span>(<span class="main-code__macro">GL_ARRAY_BUFFER</span>, VBO);</span>
+                            <span class="main-code__line-code"><span class="main-code__function">glBufferData</span>(<span class="main-code__macro">GL_ARRAY_BUFFER</span>, <span class="main-code__var">sizeof</span>(vertices), vertices, <span class="main-code__macro">GL_STATIC_DRAW</span>);</span>
+                            <span class="main-code__line-code"><span class="main-code__function">glEnableVertexAttribArray</span>(0);</span> 
+                            <span class="main-code__line-code"> <span class="main-code__function">glVertexAttribPointer</span>(0, 3, GL_FLOAT, GL_FALSE, 3 * <span class="main-code__var">sizeof</span>(float), 0);</span>
+                        </span>
+                    <br>
+                }
+                <span class="main-code__line-code"><span class="main-code__var">int</span> main() </span>{
+                <span class="main-code__align">
+                    <span class="main-code__line-code"><span class="main-code__function">glfwInit</span>(); </span>
+                    <span class="main-code__line-code"><span class="main-code__class">GLFWwindow</span>* window = <span class="main-code__function">glfwCreateWindow</span>(400, 400, "app", nullptr, nullptr);</span>
+                    <span class="main-code__line-code"><span class="main-code__function">glfwMakeContextCurrent</span>(window);</span>
+                     <span class="main-code__line-code"><span class="main-code__function">gladLoadGLLoader</span>((<span class="main-code__class">GLADloadproc</span>) <span class="main-code__function">glfwGetProcAddress</span>);</span>
+                     <span class="main-code__line-code"><span class="main-code__function">initialize</span>();</span>
+                     <span class="main-code__line-code"> <span class="main-code__loop">while</span>(<span class="main-code__function">!glfwWindowShouldClose</span>(window))</span>
+                    <span class="main-code__line-code">{</span>
+                    <span class="main-code__align">
+                        <span class="main-code__line-code"><span class="main-code__function">glfwPollEvents</span> ();</span>
+                        <span class="main-code__line-code"><span class="main-code__macro">glClear</span>(<span class="main-code__macro">GL_COLOR_BUFFER_BIT</span>);</span>
+                        <span class="main-code__line-code"><span class="main-code__macro">glDrawArrays</span>(<span class="main-code__macro">GL_TRIANGLES</span>, 0, 3);</span> 
+                        <span class="main-code__line-code"><span class="main-code__function">glfwSwapBuffers</span> (window); </span>
+                    </span>
+                    <span class="main-code__line-code">}</span>
+                </span>
+                <span class="main-code__line-code">}</span>
+                </div>
+                </div>
+            </p>
+        </main>
     
     <script src="../javascript/script.js"></script>
 </body>
